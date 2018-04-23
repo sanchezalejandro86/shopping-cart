@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: shopping-cart
+---
+spring:
+  profiles: local, test
+  data:
+    mongodb:
+      database: test-db
+
+server:
+  port: 8888
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

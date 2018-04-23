@@ -5,6 +5,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Created by alejandro on 23/04/18.
+ */
 @Document(collection = "products")
 public class Product {
 
@@ -23,6 +26,9 @@ public class Product {
         this.description = description;
         this.unit_price = unit_price;
         this.stock = stock;
+    }
+
+    public Product(){
     }
 
     public String getId() {
