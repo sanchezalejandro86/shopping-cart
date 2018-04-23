@@ -4,53 +4,42 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Document(collection = "products")
+@Document(collection = "carts")
 public class Cart {
 
     @Id
     private String id;
 
     @NotNull
-    private String description;
+    private String fullname;
 
     @NotNull
-    private Double unit_price;
+    private String email;
 
-    private Long stock;
+    private LocalDateTime creationDate;
 
-    public Cart(String id, @NotNull String description, @NotNull Double unit_price, Long stock) {
-        this.id = id;
-        this.description = description;
-        this.unit_price = unit_price;
-        this.stock = stock;
+    private List<Product> products;
+
+    private Double total;
+
+    private Status status;
+
+    enum Status {
+        NEW,
+
     }
 
-    public String getId() {
-        return id;
+    public Cart(@NotNull String fullname, @NotNull String email) {
+        this.fullname = fullname;
+        this.email = email;
+        this.creationDate = LocalDateTime.now();
+        this.products = new ArrayList<>();
+        this.total = 0d;
+        this.status = Status.NEW;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getUnit_price() {
-        return unit_price;
-    }
-
-    public void setUnit_price(Double unit_price) {
-        this.unit_price = unit_price;
-    }
-
-    public Long getStock() {
-        return stock;
-    }
-
-    public void setStock(Long stock) {
-        this.stock = stock;
-    }
 }

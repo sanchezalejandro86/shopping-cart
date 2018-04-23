@@ -19,8 +19,7 @@ public class Product {
 
     private Long stock;
 
-    public Product(String id, @NotNull String description, @NotNull Double unit_price, Long stock) {
-        this.id = id;
+    public Product(@NotNull String description, @NotNull Double unit_price, Long stock) {
         this.description = description;
         this.unit_price = unit_price;
         this.stock = stock;
