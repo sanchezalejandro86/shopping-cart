@@ -5,15 +5,21 @@ import ar.com.garbarino.domain.Item;
 import ar.com.garbarino.domain.Product;
 import ar.com.garbarino.dto.CartClientDto;
 import ar.com.garbarino.dto.CartProductDto;
+import ar.com.garbarino.dto.ItemDTO;
 import ar.com.garbarino.exception.DomainEntityNotFound;
 import ar.com.garbarino.repository.CartRepository;
 import ar.com.garbarino.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.resource.HttpResource;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by alejandro on 23/04/18.
@@ -55,6 +61,25 @@ public class CartServiceImpl implements CartService {
 
         cart.deleteProduct(productId);
         cartRepository.save(cart);
+    }
+
+    @Override
+    public List<ItemDTO> getProducts(String id) {
+        Cart cart = this.cartRepository.findById(id).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Cart con id: " + id));
+
+        List<ItemDTO> items = cart.getProducts().stream().map(p ->
+                new ItemDTO(p.getProduct().getId(),
+                        p.getProduct().getDescription(),
+                        p.getQuantity(),
+                        p.getUnitPrice())
+        ).collect(Collectors.toList());
+
+        return items;
+    }
+
+    @Override
+    public Cart getById(String id){
+        return this.cartRepository.findById(id).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Cart con id: " + id));
     }
 
 }

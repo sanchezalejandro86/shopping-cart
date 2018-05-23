@@ -15,7 +15,7 @@ public class Item {
     private Cart cart;
 
     @ApiModelProperty(notes = "Producto a agregar")
-    @DBRef
+    @DBRef(lazy = true)
     private Product product;
 
     @ApiModelProperty(notes = "La cantidad de productos a agregar", required = true)
