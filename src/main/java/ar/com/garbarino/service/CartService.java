@@ -23,4 +23,6 @@ public interface CartService {
     List<ItemDTO> getProducts(String cartId);
 
     Cart getById(String cartId);
+
+    void checkout(String cartId);
 }

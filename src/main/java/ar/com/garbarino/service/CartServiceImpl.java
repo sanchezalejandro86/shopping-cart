@@ -6,6 +6,7 @@ import ar.com.garbarino.domain.Product;
 import ar.com.garbarino.dto.CartClientDto;
 import ar.com.garbarino.dto.CartProductDto;
 import ar.com.garbarino.dto.ItemDTO;
+import ar.com.garbarino.exception.CartStatusViolationException;
 import ar.com.garbarino.exception.DomainEntityNotFound;
 import ar.com.garbarino.repository.CartRepository;
 import ar.com.garbarino.repository.ProductRepository;
@@ -51,6 +52,8 @@ public class CartServiceImpl implements CartService {
         Cart cart = this.cartRepository.findById(id).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Cart con id: " + id));
         Product product = this.productRepository.findById(cartProductDto.getId()).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Producto con id: " + cartProductDto.getId()));
 
+        checkCartStatus(cart);
+
         cart.addProduct(new Item(cart, product, cartProductDto.getQuantity(), cartProductDto.getUnitPrice()));
         cartRepository.save(cart);
     }
@@ -58,6 +61,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public void deleteProduct(String id, String productId) {
         Cart cart = this.cartRepository.findById(id).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Cart con id: " + id));
+
+        checkCartStatus(cart);
 
         cart.deleteProduct(productId);
         cartRepository.save(cart);
@@ -82,4 +87,19 @@ public class CartServiceImpl implements CartService {
         return this.cartRepository.findById(id).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Cart con id: " + id));
     }
 
+    @Override
+    public void checkout(String id) {
+        Cart cart = this.cartRepository.findById(id).orElseThrow(() -> new DomainEntityNotFound("No se encontró el Cart con id: " + id));
+
+        checkCartStatus(cart);
+
+        cart.setStatus(Cart.Status.READY);
+        this.cartRepository.save(cart);
+    }
+
+    private void checkCartStatus(Cart cart){
+        if(!cart.getStatus().equals(Cart.Status.NEW)){
+            throw new CartStatusViolationException("El cart (id: " + cart.getId() + " no se encuentra en estado 'NEW' (state: " + cart.getStatus().name() + ")" );
+        }
+    }
 }

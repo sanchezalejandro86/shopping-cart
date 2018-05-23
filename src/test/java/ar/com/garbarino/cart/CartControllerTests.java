@@ -179,4 +179,34 @@ public class CartControllerTests extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.products[1].product.id", is(product2.getId())))
         ;
     }
+
+    @Test
+    public void checkoutCart() throws Exception {
+        Cart cart = this.cartRepository.findAll().get(0); //Juan Perez
+
+        // Add product 1
+        Product product1 = this.productRepository.findAll().get(0);
+        String cartProductJson = json(new CartProductDto(product1.getId(), 1L, product1.getUnitPrice()));
+        this.mockMvc.perform(
+                post("/carts/" + cart.getId() + "/products")
+                        .contentType(contentType).content(cartProductJson));
+
+        // Add product 2
+        Product product2 = this.productRepository.findAll().get(1);
+        cartProductJson = json(new CartProductDto(product2.getId(), 2L, product2.getUnitPrice()));
+        this.mockMvc.perform(
+                post("/carts/" + cart.getId() + "/products")
+                        .contentType(contentType).content(cartProductJson));
+
+        // Checkout
+        this.mockMvc.perform(
+                post("/carts/" + cart.getId() + "/checkout"))
+                .andExpect(status().isOk());
+
+        // Checkout again must fail
+        this.mockMvc.perform(
+                post("/carts/" + cart.getId() + "/checkout"))
+                .andExpect(status().isForbidden());
+
+    }
 }

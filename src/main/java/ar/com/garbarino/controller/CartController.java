@@ -101,4 +101,18 @@ public class CartController {
         return this.cartService.getById(cartId);
     }
 
+    @ApiOperation(value = "Checkout de un Cart", response = Cart.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Se realizó el checkout del Cart exitosamente"),
+            @ApiResponse(code = 401, message = "No está autorizado a ver el recurso"),
+            @ApiResponse(code = 403, message = "Tiene prohibido el acceso al recurso"),
+            @ApiResponse(code = 404, message = "No se puede encontrar el recurso"),
+            @ApiResponse(code = 500, message = "Error interno")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(path = "/{id}/checkout", method = RequestMethod.POST)
+    public void checkout(@PathVariable String id) {
+        this.cartService.checkout(id);
+    }
+
 }
