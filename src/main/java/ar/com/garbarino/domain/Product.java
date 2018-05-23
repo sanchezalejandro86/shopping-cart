@@ -1,5 +1,6 @@
 package ar.com.garbarino.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,20 +12,25 @@ import javax.validation.constraints.NotNull;
 @Document(collection = "products")
 public class Product {
 
+    @ApiModelProperty(notes = "Id del producto")
     @Id
     private String id;
 
+    @ApiModelProperty(notes = "Nombre del producto", required = true)
     @NotNull
     private String description;
 
+    @ApiModelProperty(notes = "Precio unitario del producto", required = true)
     @NotNull
-    private Double unit_price;
+    private Double unitPrice;
 
+    @ApiModelProperty(notes = "Stock del producto", required = true)
+    @NotNull
     private Long stock;
 
-    public Product(@NotNull String description, @NotNull Double unit_price, Long stock) {
+    public Product(@NotNull String description, @NotNull Double unitPrice, @NotNull Long stock) {
         this.description = description;
-        this.unit_price = unit_price;
+        this.unitPrice = unitPrice;
         this.stock = stock;
     }
 
@@ -43,12 +49,12 @@ public class Product {
         this.description = description;
     }
 
-    public Double getUnit_price() {
-        return unit_price;
+    public Double getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setUnit_price(Double unit_price) {
-        this.unit_price = unit_price;
+    public void setUnitPrice(Double unit_price) {
+        this.unitPrice = unitPrice;
     }
 
     public Long getStock() {

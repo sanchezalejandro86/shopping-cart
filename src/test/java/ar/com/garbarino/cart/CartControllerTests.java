@@ -2,15 +2,21 @@ package ar.com.garbarino.cart;
 
 import ar.com.garbarino.AbstractIntegrationTest;
 import ar.com.garbarino.domain.Cart;
+import ar.com.garbarino.domain.Product;
+import ar.com.garbarino.dto.CartProductDto;
 import ar.com.garbarino.repository.CartRepository;
+import ar.com.garbarino.repository.ProductRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.validation.constraints.NotNull;
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,9 +29,23 @@ public class CartControllerTests extends AbstractIntegrationTest {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
+
     @Before
     public void setup() throws Exception {
         //Insert initial values
+        this.cartRepository.save(new Cart("Juan Perez", "jperez@mail.com"));
+
+        this.productRepository.save(new Product("TV LG 52'' 4K", 35000d, 500l));
+        this.productRepository.save(new Product("SAMSUNG VR", 2000d, 300l));        this.productRepository.save(new Product("TV 52'' 4K", 35000d, 500l));
+        this.productRepository.save(new Product("TV SAMSUNG 55'' 4K", 38000d, 500l));
+        this.productRepository.save(new Product("TV SAMSUNG 50'' FHD", 30000d, 500l));
+        this.productRepository.save(new Product("TV SAMSUNG 45'' FHD", 27000d, 400l));
+        this.productRepository.save(new Product("TV SAMSUNG 32'' FHD", 21000d, 500l));
+        this.productRepository.save(new Product("TV LG '' 4K", 35000d, 500l));
+
     }
 
     @After
@@ -40,16 +60,50 @@ public class CartControllerTests extends AbstractIntegrationTest {
 
         this.mockMvc.perform(
                 post("/carts")
-                    .contentType(contentType).content(cartJson))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id", notNullValue()))
-                    .andExpect(jsonPath("$.fullname", is(cart.getFullname())))
-                    .andExpect(jsonPath("$.email", is(cart.getEmail())))
-                    .andExpect(jsonPath("$.creationDate", notNullValue()))
-                    .andExpect(jsonPath("$.total", is(0D)))
-                    .andExpect(jsonPath("$.products").isArray())
-                    .andExpect(jsonPath("$.products", hasSize(0)))
-                    .andExpect(jsonPath("$.status", is(Cart.Status.NEW.name())))
+                        .contentType(contentType).content(cartJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.fullname", is(cart.getFullname())))
+                .andExpect(jsonPath("$.email", is(cart.getEmail())))
+                .andExpect(jsonPath("$.creationDate", notNullValue()))
+                .andExpect(jsonPath("$.total", is(0D)))
+                .andExpect(jsonPath("$.products").isArray())
+                .andExpect(jsonPath("$.products", hasSize(0)))
+                .andExpect(jsonPath("$.status", is(Cart.Status.NEW.name())))
         ;
+    }
+
+    @Test
+    public void addProductToCart() throws Exception {
+
+        Cart cart = this.cartRepository.findAll().get(0); //Juan Perez
+        Product product = this.productRepository.findAll().get(0); //"TV LG 52'' 4K" | 35000d | 500
+
+        String cartProductJson = json(new CartProductDto(product.getId(), 1L, product.getUnitPrice()));
+
+        this.mockMvc.perform(
+                post("/carts/"+cart.getId()+"/products")
+                .contentType(contentType).content(cartProductJson))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void removeProductFromCart() throws Exception {
+
+        Cart cart = this.cartRepository.findAll().get(0); //Juan Perez
+
+        // Add product 1
+        Product product = this.productRepository.findAll().get(0); //"TV LG 52'' 4K" | 35000d | 500
+
+        String cartProductJson = json(new CartProductDto(product.getId(), 1L, product.getUnitPrice()));
+
+        this.mockMvc.perform(
+                post("/carts/"+cart.getId()+"/products")
+                        .contentType(contentType).content(cartProductJson));
+
+        // Remove product 1
+        this.mockMvc.perform(
+                delete("/carts/"+cart.getId()+"/products/"+product.getId()))
+                .andExpect(status().isOk());
     }
 }
