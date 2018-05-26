@@ -44,7 +44,7 @@ public class Cart {
     private Status status;
 
     public enum Status {
-        NEW, READY,
+        NEW, READY, PROCESSING, FAILED, PROCESSED,
 
     }
 

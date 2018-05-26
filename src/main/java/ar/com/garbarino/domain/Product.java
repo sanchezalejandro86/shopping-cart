@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -26,6 +27,7 @@ public class Product {
 
     @ApiModelProperty(notes = "Stock del producto", required = true)
     @NotNull
+    @Min(0)
     private Long stock;
 
     public Product(@NotNull String description, @NotNull Double unitPrice, @NotNull Long stock) {
