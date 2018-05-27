@@ -1,51 +1,44 @@
-CARRITO DE COMPRAS:
+# CARRITO DE COMPRAS:
 
-Armar un repositorio de productos con los siguientes campos:
-- id 
-- description (nombre del producto)
-- unit_price (precio unitario)
-- stock (stock del producto)
+Ejercicio técnico de carrito de compras para ser evaluado por el equipo de ingenieros de Garbarino S.A.
+Ver el [ENUNCIADO.md](ENUNCIADO.md) para mayor detalle.
 
-Los datos se pueden guardar en una base de datos o en memoria y deberán estar precargados en el sistema (Pueden estar hardcodeados).
-Armar luego un repositorio de "carts" (carritos de compra) con los siguientes campos:
+## Getting Started
 
-- id
-- fullName (nombre y apellido del cliente)
-- email (email del cliente)
-- creationDate (fecha de creación del carrito)
-- products (lista de objetos con formato {id, unit_price, quantity} de productos que se desean comprar)
-- total (precio total a pagar por los productos que haya en el carrito)
-- status (estado actual del carrito)
+Instrucciones para obtener una copia del proyecto levantado y corriendo en tu entorno local para propósitos de desarrollo y testing. 
 
-Para este recurso (carts) desarrollar las siguientes acciones:
+### Prerequisites
 
-[POST] /carts:
-Este servicio deberá crear un nuevo carrito y guardarlo en el repositorio. Deberá aceptar como body los campos requeridos para la creacion del mismo:
-- fullName (nombre y apellido del cliente)
-- email (email del cliente)
+Tener instalado java 8 y gradle.
 
-"creationDate" se asignará con la fecha actual. "total" arranca en 0. "status" arranca en estado "NEW". "products" será una colección vacía. Como respuesta del servicio, se debe retornar el carrito recien creado con su respectivo ID autogenerado.
+### Installing
 
-[POST] /carts/{id}/products
-Deberá permitir agregar productos al carrito cuyo ID sea {id}. El body del request es el id del producto y la cantidad del mismo que se desea agregar al carrito. Por ejemplo: {"id": 20, "quantity": 2}. 
+Al ejecutar gradle se compilará el jar y ejecutarán todos los tests unitarios.
+```
+./gradlew build
+```
 
-IMPORTANTE: Si bien se ingresa un "id" y un "quantity" al carrito, es buena idea también guardar el precio unitario del producto al momento de agregarlo, para evitar problemas con posibles variaciones de precio.
+Luego se podrá ejecutar el jar generado de la siguiente forma:
+```
+java -jar build/libs/shopping-cart-0.0.1-SNAPSHOT.jar 
+```
 
-[DELETE] /carts/{cartId}/products/{productId}
-Deberá remover el producto {productId} del carrito con id {cartId}. El DELETE elimina el elemento del array de products (es decir: no resta a quantity, simplemente lo elimina por completo)
+## Running the tests
 
-[GET] /carts/{id}/products
-Deberá permitir ver todos los productos que haya en el carrito en ese momento (se retornara el producto completo con los campos: id, description, quantity y unit_price.)
+Los tests se pueden ejecutar directamente por separado con gradle ejecutando la siguiente instrucción:
 
-[GET] /carts/{id}/ 
-Permite ver el carrito armado, con su respectivo "total", y los ids de los productos en "products". 
+```
+./gradlew check
+```
 
-[POST] /carts/{id}/checkout
-Para simplificar el ejercicio no enviarmos datos de tarjeta ni nada por el estilo. Este servicio simplemente debera pasar el carrito a status: "READY" 
+Para ejecutar tests interactivos con la API REST se puede utilizar la interface de Swagger levantando la aplicación (jar) y luego ingresando desde un browser a la dirección http://localhost:8080/swagger-ui.html . Allí se visualizarán toda la interfaz expuesta por la API para interactuar con la misma y reallizar pruebas más manuales. Cabe destacar que en la consola se loguean los registros de Productos y Carts que se crean en con el seeder en caso de necesitar los IDs para ingresar en los argumentos para invocar dichos métodos de la página de swagger.
 
+## Built with
 
-Finalmente desarrollar una tarea que corra cada "x" tiempo, y haga la simulación de que se procesan los pagos de los carritos. Esta simulación consistirá en pasar el carrito a status "PROCESSED" si es que hay suficiente stock. Caso contrario pasará a estado "FAILED". Guardar algun LOG para poder trackear estos casos. Tener en cuenta para este servicio que pueden llegar a procesarse miles de carritos a la vez, con lo cual sería recomendable usar algun ThreadPool, para poder procesar varios en paralelo.
+* [Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) - The web framework used
+* [Gradle](https://docs.gradle.org/current/userguide/userguide.html) - Dependency Management
+* [Swagger](https://swagger.io/docs/) - Generate API documentation
 
-Solo hace falta hacer un test unitario para esta lógica de definir si el carrito pasa a PROCESSED o FAILED.
+## Authors
 
-Se apreciará el buen uso de multitheading, separación en capas, manejo de excepciones, uso de la stream api y claridad en el código. El framework usado queda a elección del candidato.
+* **Alejandro Sánchez** - [sanchezalejandro86](https://github.com/sanchezalejandro86)
