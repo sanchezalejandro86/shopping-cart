@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 /**
  * Created by alejandro on 26/04/18.
@@ -26,10 +27,14 @@ public class Trace {
     @NotNull
     private String description;
 
+    @ApiModelProperty(notes = "Fecha de creación del carrito")
+    private LocalDateTime creationDate;
+
     public Trace(Cart cart, @NotNull Cart.Status status, @NotNull String description) {
         this.cart = cart;
         this.status = status;
         this.description = description;
+        this.creationDate = LocalDateTime.now();
     }
 
     public String getId() {
@@ -58,5 +63,9 @@ public class Trace {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 }
